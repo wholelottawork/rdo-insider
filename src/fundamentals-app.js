@@ -1,10 +1,19 @@
 // RDO ONE — Fundamentals app, ported from Claude Design "RDO ONE Terminal.dc.html".
-// Plain script (non-module) so it can attach handlers to window like the rest of index.html's inline script.
+// Loaded as an ES module (needs `import` for Hyperliquid signing) but still attaches
+// window.rdoXxx handlers for the inline onclick="" attributes, same as the rest of index.html.
+import * as HL from './hyperliquid.js';
+
 (function () {
   'use strict';
 
   var ACCENT = '#FF5C00';
-  var BALANCE = 18204.55;
+  var LIVE_COIN = 'BTC';
+
+  // Real account state — populated once a wallet is connected. Terminal page reads this
+  // instead of a hardcoded balance; PNL/Markets/News stay on their existing mock data.
+  var WALLET = { address: null, connecting: false };
+  var ACCOUNT = { balance: null, positions: [], openOrders: [], fills: [] };
+  function currentBalance() { return ACCOUNT.balance !== null ? ACCOUNT.balance : 0; }
 
   function rng(seed) {
     var a = seed;
@@ -199,6 +208,275 @@
       spread: spreadStep,
     };
   }
+
+  /* ══════════════════════════════════════════════════════════
+     REAL HYPERLIQUID TESTNET DATA (Terminal page only)
+     ══════════════════════════════════════════════════════ */
+  function calcRSI(closes, period) {
+    period = period || 14;
+    var out = new Array(closes.length).fill(null);
+    if (closes.length <= period) return out;
+    var gains = 0, losses = 0, i;
+    for (i = 1; i <= period; i++) {
+      var d0 = closes[i] - closes[i - 1];
+      if (d0 > 0) gains += d0; else losses -= d0;
+    }
+    gains /= period; losses /= period;
+    out[period] = losses === 0 ? 100 : 100 - 100 / (1 + gains / losses);
+    for (i = period + 1; i < closes.length; i++) {
+      var d = closes[i] - closes[i - 1];
+      var g = d > 0 ? d : 0, l = d < 0 ? -d : 0;
+      gains = (gains * (period - 1) + g) / period;
+      losses = (losses * (period - 1) + l) / period;
+      out[i] = losses === 0 ? 100 : 100 - 100 / (1 + gains / losses);
+    }
+    return out;
+  }
+
+  // Same geometry math as genMarketData(), but driven by real candle/order-book data
+  // instead of the seeded RNG. Kept separate from genMarketData so the synthetic
+  // placeholder (used for the very first paint, before the network call resolves)
+  // can't be accidentally broken by this.
+  function buildRealMarket(rawCandles, l2Book) {
+    var N = rawCandles.length;
+    var CHART_W = 1200, CHART_H = 460, PAD_T = 24, PAD_B = 28, AXIS_R = 64;
+    var plotW = CHART_W - AXIS_R;
+    var slot = plotW / N;
+    var bodyW = slot * 0.56;
+
+    var markPrice = rawCandles[N - 1].close;
+    var refIdx = Math.max(0, N - 24);
+    var openPrice24h = rawCandles[refIdx].open;
+    var changePct = ((markPrice - openPrice24h) / openPrice24h) * 100;
+
+    var maxP = Math.max.apply(null, rawCandles.map(function (c) { return c.high; })) * 1.002;
+    var minP = Math.min.apply(null, rawCandles.map(function (c) { return c.low; })) * 0.998;
+    function priceToY(p) { return PAD_T + ((maxP - p) / (maxP - minP)) * (CHART_H - PAD_T - PAD_B); }
+
+    var candles = rawCandles.map(function (c, i2) {
+      var cx = i2 * slot + slot / 2;
+      var up = c.close >= c.open;
+      return {
+        wickX: cx.toFixed(2), wickY1: priceToY(c.high).toFixed(2), wickY2: priceToY(c.low).toFixed(2),
+        bodyX: (cx - bodyW / 2).toFixed(2), bodyY: priceToY(Math.max(c.open, c.close)).toFixed(2),
+        bodyW: bodyW.toFixed(2), bodyH: Math.max(1.4, Math.abs(priceToY(c.open) - priceToY(c.close))).toFixed(2),
+        color: up ? '#1FC47C' : '#FF4757',
+      };
+    });
+
+    var closesPath = rawCandles.map(function (c, i2) {
+      var cx = i2 * slot + slot / 2;
+      return (i2 === 0 ? 'M' : 'L') + cx.toFixed(1) + ',' + priceToY(c.close).toFixed(1);
+    }).join(' ');
+    var lastX = ((N - 1) * slot + slot / 2).toFixed(1);
+    var areaLinePath = closesPath;
+    var areaFillPath = closesPath + ' L' + lastX + ',' + CHART_H + ' L' + (slot / 2).toFixed(1) + ',' + CHART_H + ' Z';
+
+    var maxVol = Math.max.apply(null, rawCandles.map(function (c) { return c.vol || 0.0001; }));
+    var volumeBars = rawCandles.map(function (c, i2) {
+      var cx = i2 * slot + slot / 2;
+      var h = ((c.vol || 0) / maxVol) * 78;
+      return { x: (cx - bodyW / 2).toFixed(2), y: (92 - h).toFixed(2), w: bodyW.toFixed(2), h: h.toFixed(2), color: c.close >= c.open ? 'rgba(31,196,124,0.55)' : 'rgba(255,71,87,0.5)' };
+    });
+
+    var gridCount = 5;
+    var priceGridLines = [];
+    for (var gi = 0; gi <= gridCount; gi++) {
+      var pv = minP + ((maxP - minP) * gi) / gridCount;
+      var y2 = priceToY(pv);
+      priceGridLines.push({ y: y2.toFixed(2), yLabel: (y2 + 4).toFixed(2), label: '$' + pv.toLocaleString('en-US', { maximumFractionDigits: 0 }) });
+    }
+
+    var closes = rawCandles.map(function (c) { return c.close; });
+    var rsiArr = calcRSI(closes, 14);
+    var rsiPts = [];
+    rsiArr.forEach(function (rv, i2) {
+      if (rv === null) return;
+      var cx = i2 * slot + slot / 2;
+      var y3 = 65 - (rv / 100) * 56;
+      rsiPts.push((rsiPts.length === 0 ? 'M' : 'L') + cx.toFixed(1) + ',' + y3.toFixed(1));
+    });
+
+    function levelsToRows(levels) {
+      var cum = 0;
+      var rows = levels.map(function (lv) {
+        var px = parseFloat(lv.px), sz = parseFloat(lv.sz);
+        cum += sz;
+        return { price: px, size: sz, cum: cum };
+      });
+      var maxCum = Math.max.apply(null, rows.map(function (r) { return r.cum; }).concat([0.0001]));
+      return rows.map(function (r) {
+        return {
+          price: '$' + r.price.toLocaleString('en-US', { maximumFractionDigits: 1 }),
+          size: r.size.toFixed(3),
+          total: r.cum.toFixed(2),
+          barPct: ((r.cum / maxCum) * 100).toFixed(0) + '%',
+        };
+      });
+    }
+    var bidLevels = (l2Book && l2Book.levels && l2Book.levels[0]) || [];
+    var askLevels = (l2Book && l2Book.levels && l2Book.levels[1]) || [];
+    var asks = levelsToRows(askLevels.slice(0, 15)).reverse();
+    var bids = levelsToRows(bidLevels.slice(0, 15));
+    var spread = askLevels.length && bidLevels.length ? (parseFloat(askLevels[0].px) - parseFloat(bidLevels[0].px)) : 0;
+
+    return {
+      markPrice: markPrice, changePct: changePct,
+      candles: candles, volumeBars: volumeBars, priceGridLines: priceGridLines,
+      rsiPath: rsiPts.join(' '),
+      lastPriceY: priceToY(markPrice).toFixed(2),
+      areaFillPath: areaFillPath, areaLinePath: areaLinePath,
+      asks: asks, bids: bids,
+      spread: spread,
+    };
+  }
+
+  var liveMarketFailed = false;
+  async function loadMarketData() {
+    try {
+      var now = Date.now();
+      var startTime = now - 100 * 60 * 60 * 1000; // ~100 hourly candles
+      var candlesResp = await HL.fetchCandles(LIVE_COIN, '1h', startTime, now);
+      var l2Resp = await HL.fetchL2Book(LIVE_COIN);
+      if (!candlesResp || !candlesResp.length) throw new Error('Hyperliquid returned no candles');
+      var rawCandles = candlesResp.map(function (c) {
+        return { open: parseFloat(c.o), close: parseFloat(c.c), high: parseFloat(c.h), low: parseFloat(c.l), vol: parseFloat(c.v) };
+      });
+      MARKET = buildRealMarket(rawCandles, l2Resp);
+      liveMarketFailed = false;
+    } catch (e) {
+      console.error('[hyperliquid] market data load failed — keeping last known data', e);
+      liveMarketFailed = true;
+      if (!MARKET) genMarketData(); // absolute fallback so the page never renders on null data
+    }
+    if (WALLET.address) await loadAccountData(); // positions' mark price depends on MARKET
+    if (STATE.page === 'terminal') render();
+  }
+
+  var _marketPollTimer = null;
+  function startMarketPolling() {
+    if (_marketPollTimer) return;
+    loadMarketData();
+    _marketPollTimer = setInterval(loadMarketData, 5000);
+  }
+
+  async function loadAccountData() {
+    if (!WALLET.address) return;
+    try {
+      var state = await HL.fetchClearinghouseState(WALLET.address);
+      ACCOUNT.balance = parseFloat((state.marginSummary && state.marginSummary.accountValue) || 0);
+      ACCOUNT.positions = (state.assetPositions || [])
+        .filter(function (p) { return parseFloat(p.position.szi) !== 0; })
+        .map(function (p) {
+          var pos = p.position;
+          var szi = parseFloat(pos.szi);
+          var isLong = szi > 0;
+          var entry = parseFloat(pos.entryPx);
+          var mark = MARKET ? MARKET.markPrice : entry;
+          var sizeAbs = Math.abs(szi);
+          var sizeUsd = sizeAbs * mark;
+          var margin = parseFloat(pos.marginUsed || 0);
+          var pnl = parseFloat(pos.unrealizedPnl || 0);
+          var pnlPct = margin ? (pnl / margin) * 100 : 0;
+          var lev = (pos.leverage && pos.leverage.value) || 1;
+          return {
+            market: pos.coin + '-PERP',
+            sideLabel: ' ' + lev + 'x ' + (isLong ? 'LONG' : 'SHORT'),
+            sideColor: isLong ? '#1FC47C' : '#FF4757',
+            size: fmt$(sizeUsd, 0),
+            entry: fmt$(entry, entry < 1000 ? 2 : 0),
+            mark: fmt$(mark, mark < 1000 ? 2 : 0),
+            pnlLabel: fmtSigned$(pnl, 2) + ' (' + (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(1) + '%)',
+            pnlColor: pnl >= 0 ? '#1FC47C' : '#FF4757',
+            liq: pos.liquidationPx ? fmt$(parseFloat(pos.liquidationPx), 2) : '—',
+            margin: fmt$(margin, 0),
+            coin: pos.coin, isLong: isLong, sizeAbs: sizeAbs,
+          };
+        });
+
+      var orders = await HL.fetchOpenOrders(WALLET.address);
+      ACCOUNT.openOrders = (orders || []).map(function (o) {
+        var isBuy = o.side === 'B';
+        return {
+          market: o.coin + '-PERP', typeLabel: 'LIMIT',
+          sideLabel: isBuy ? 'BUY' : 'SELL', sideColor: isBuy ? '#1FC47C' : '#FF4757',
+          price: fmt$(parseFloat(o.limitPx), 2), size: fmt$(parseFloat(o.sz), 3),
+        };
+      });
+
+      var fills = await HL.fetchUserFills(WALLET.address);
+      ACCOUNT.fills = (fills || []).slice(0, 20).map(function (f) {
+        var isBuy = f.side === 'B';
+        return {
+          time: new Date(f.time).toLocaleString(),
+          market: f.coin + '-PERP',
+          sideLabel: isBuy ? 'BUY' : 'SELL', sideColor: isBuy ? '#1FC47C' : '#FF4757',
+          price: fmt$(parseFloat(f.px), 2), size: fmt$(parseFloat(f.sz), 3), fee: fmt$(parseFloat(f.fee || 0), 2),
+        };
+      });
+    } catch (e) {
+      console.error('[hyperliquid] account data load failed', e);
+    }
+  }
+
+  window.rdoConnectWallet = async function () {
+    if (WALLET.connecting || WALLET.address) return;
+    WALLET.connecting = true;
+    render();
+    try {
+      var addr = await HL.connectWallet();
+      WALLET.address = addr;
+      await loadAccountData();
+    } catch (e) {
+      console.error('[hyperliquid] wallet connect failed', e);
+      alert('Wallet connect failed: ' + e.message);
+    } finally {
+      WALLET.connecting = false;
+      render();
+    }
+  };
+
+  window.rdoSubmitOrder = async function () {
+    if (!WALLET.address) { alert('Connect your wallet first.'); return; }
+    if (!MARKET) { alert('Market data has not loaded yet — try again in a moment.'); return; }
+    var st = computeTradeStats();
+    if (!st.collateral || st.size <= 0) { alert('Enter a collateral amount first.'); return; }
+    var btn = document.getElementById('submitBtn');
+    var origText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = 'CONFIRM IN WALLET…'; btn.disabled = true; }
+    try {
+      var sizeSz = st.size / MARKET.markPrice;
+      var result;
+      if (st.isLimit) {
+        result = await HL.placeOrder({ coin: LIVE_COIN, isBuy: st.isLong, sizeSz: sizeSz, limitPx: st.price, tif: 'Gtc' });
+      } else {
+        result = await HL.placeMarketOrder({ coin: LIVE_COIN, isBuy: st.isLong, sizeSz: sizeSz, refPx: MARKET.markPrice });
+      }
+      console.log('[hyperliquid] order result', result);
+      if (result && result.status === 'ok') alert('Order placed on Hyperliquid testnet.');
+      else alert('Hyperliquid responded: ' + JSON.stringify(result));
+      await loadAccountData();
+      render();
+    } catch (e) {
+      console.error('[hyperliquid] order failed', e);
+      alert('Order failed: ' + e.message);
+    } finally {
+      if (btn) { btn.textContent = origText; btn.disabled = false; }
+    }
+  };
+
+  window.rdoClosePosition = async function (coin, isLong, sizeAbs) {
+    if (!WALLET.address || !MARKET) return;
+    if (!confirm('Close ' + coin + '-PERP ' + (isLong ? 'LONG' : 'SHORT') + ' position?')) return;
+    try {
+      await HL.placeMarketOrder({ coin: coin, isBuy: !isLong, sizeSz: sizeAbs, refPx: MARKET.markPrice, reduceOnly: true });
+      await loadAccountData();
+      render();
+    } catch (e) {
+      console.error('[hyperliquid] close position failed', e);
+      alert('Close failed: ' + e.message);
+    }
+  };
 
   function genPnlData() {
     var r = rng(4471);
@@ -505,9 +783,9 @@
           '<div style="display:flex;flex-direction:column;gap:1px;"><span style="color:#55554e;font-size:8.5px;letter-spacing:1px;">FUNDING 1H</span><span style="color:#1FC47C;font-size:11px;">+0.0021%</span></div>' +
         '</div>' : '') +
         '<div style="display:flex;align-items:center;gap:10px;margin-left:' + (isTerminal ? '0' : 'auto') + ';">' +
-          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="color:#55554e;font-size:8.5px;letter-spacing:1px;">BALANCE</span><span style="color:#F5F1EA;font-size:12px;">' + fmt$(BALANCE, 2) + '</span></div>' +
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="color:#55554e;font-size:8.5px;letter-spacing:1px;">BALANCE</span><span style="color:#F5F1EA;font-size:12px;">' + (WALLET.address ? fmt$(currentBalance(), 2) : '—') + '</span></div>' +
           '<button style="font:700 10px \'JetBrains Mono\',monospace;letter-spacing:1.5px;padding:8px 14px;background:' + ACCENT + ';border:none;border-radius:3px;color:#0A0A0A;cursor:pointer;">DEPOSIT</button>' +
-          '<button style="font:700 10px \'JetBrains Mono\',monospace;letter-spacing:1.5px;padding:8px 14px;background:transparent;border:1px solid rgba(255,92,0,0.4);border-radius:3px;color:' + ACCENT + ';cursor:pointer;">0x74A9...9F2C</button>' +
+          '<button onclick="window.rdoConnectWallet()" style="font:700 10px \'JetBrains Mono\',monospace;letter-spacing:1.5px;padding:8px 14px;background:transparent;border:1px solid rgba(255,92,0,0.4);border-radius:3px;color:' + ACCENT + ';cursor:pointer;">' + (WALLET.connecting ? 'CONNECTING…' : (WALLET.address ? (WALLET.address.slice(0, 6) + '...' + WALLET.address.slice(-4)) : 'CONNECT WALLET')) + '</button>' +
         '</div>' +
       '</div>'
     );
@@ -627,7 +905,7 @@
           '<input type="text" id="limitPriceInput" value="' + escAttr(STATE.limitPrice) + '" oninput="window.rdoOnLimitPriceInput(this.value)" style="width:100%;background:#141414;border:1px solid rgba(255,255,255,0.08);border-radius:4px;color:#F5F1EA;font-family:\'JetBrains Mono\',monospace;font-size:13px;padding:10px 12px;outline:none;"/>' +
         '</div>' : '') +
       '<div>' +
-        '<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:#6b6b63;font-size:9.5px;letter-spacing:1px;">COLLATERAL (USDC)</span><span style="color:#6b6b63;font-size:9.5px;">AVAIL ' + fmt$(BALANCE, 2) + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:#6b6b63;font-size:9.5px;letter-spacing:1px;">COLLATERAL (USDC)</span><span style="color:#6b6b63;font-size:9.5px;">AVAIL ' + (WALLET.address ? fmt$(currentBalance(), 2) : '— connect wallet') + '</span></div>' +
         '<div style="position:relative;">' +
           '<input type="text" inputmode="decimal" id="collateralInput" value="' + escAttr(STATE.collateral) + '" oninput="window.rdoOnCollateralInput(this.value)" style="width:100%;background:#141414;border:1px solid rgba(255,255,255,0.08);border-radius:4px;color:#F5F1EA;font-family:\'JetBrains Mono\',monospace;font-size:13px;padding:10px 46px 10px 12px;outline:none;"/>' +
           '<button onclick="window.rdoOnMaxCollateral()" style="position:absolute;right:6px;top:6px;bottom:6px;padding:0 8px;background:rgba(255,255,255,0.06);border:none;border-radius:3px;color:#a8a89f;font-size:9px;font-weight:700;letter-spacing:0.5px;cursor:pointer;">MAX</button>' +
@@ -644,7 +922,7 @@
         '<div style="display:flex;justify-content:space-between;"><span style="color:#6b6b63;font-size:10.5px;">Margin Required</span><span id="statMargin" style="color:#c9c9c0;font-size:11px;">' + fmt$(st.collateral, 2) + '</span></div>' +
         '<div style="display:flex;justify-content:space-between;"><span style="color:#6b6b63;font-size:10.5px;">Est. Fee (0.10%)</span><span id="statFee" style="color:#c9c9c0;font-size:11px;">' + fmt$(st.fee, 2) + '</span></div>' +
       '</div>' +
-      '<button id="submitBtn" style="width:100%;padding:13px;background:' + submitBg + ';border:none;border-radius:4px;color:#0A0A0A;font-family:\'JetBrains Mono\',monospace;font-size:11.5px;font-weight:700;letter-spacing:1.5px;cursor:pointer;">' + submitLabel + '</button>'
+      '<button id="submitBtn" onclick="' + (WALLET.address ? 'window.rdoSubmitOrder()' : 'window.rdoConnectWallet()') + '" style="width:100%;padding:13px;background:' + submitBg + ';border:none;border-radius:4px;color:#0A0A0A;font-family:\'JetBrains Mono\',monospace;font-size:11.5px;font-weight:700;letter-spacing:1.5px;cursor:pointer;">' + (WALLET.address ? submitLabel : 'CONNECT WALLET TO TRADE') + '</button>'
     );
   }
 
@@ -670,7 +948,7 @@
   window.rdoOnCollateralInput = function (v) { STATE.collateral = v; updateTradeStats(); };
   window.rdoOnLimitPriceInput = function (v) { STATE.limitPrice = v; updateTradeStats(); };
   window.rdoOnMaxCollateral = function () {
-    STATE.collateral = BALANCE.toFixed(2);
+    STATE.collateral = currentBalance().toFixed(2);
     var inp = document.getElementById('collateralInput');
     if (inp) inp.value = STATE.collateral;
     updateTradeStats();
@@ -682,103 +960,67 @@
     updateTradeStats();
   };
 
-  /* ── bottom panel: positions / open orders / trade history ── */
-  function computePositions() {
-    var m = MARKET;
-    var positionsRaw = [
-      { market: 'BTC-PERP', lev: '10x', isLong: true, size: 12450, entry: 66850, mark: m.markPrice, liq: 59200, margin: 1245 },
-      { market: 'ETH-PERP', lev: '5x', isLong: false, size: 8200, entry: 3512, mark: 3478, liq: 3890, margin: 1640 },
-      { market: 'SOL-PERP', lev: '20x', isLong: true, size: 5000, entry: 148.20, mark: 146.85, liq: 141.30, margin: 250 },
-    ];
-    return positionsRaw.map(function (pos) {
-      var dir = pos.isLong ? 1 : -1;
-      var pnlAbs = ((pos.mark - pos.entry) / pos.entry) * pos.size * dir;
-      var pnlPct = (pnlAbs / pos.margin) * 100;
-      return {
-        market: pos.market,
-        sideLabel: ' ' + pos.lev + ' ' + (pos.isLong ? 'LONG' : 'SHORT'),
-        sideColor: pos.isLong ? '#1FC47C' : '#FF4757',
-        size: fmt$(pos.size, 0),
-        entry: fmt$(pos.entry, pos.entry < 1000 ? 2 : 0),
-        mark: fmt$(pos.mark, pos.mark < 1000 ? 2 : 0),
-        pnlLabel: fmtSigned$(pnlAbs, 2) + ' (' + (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(1) + '%)',
-        pnlColor: pnlAbs >= 0 ? '#1FC47C' : '#FF4757',
-        liq: fmt$(pos.liq, pos.liq < 1000 ? 2 : 0),
-        margin: fmt$(pos.margin, 0),
-      };
-    });
-  }
-
-  function openOrdersData() {
-    return [{ market: 'BTC-PERP', typeLabel: 'LIMIT', isLong: true, price: fmt$(65000, 0), size: fmt$(2000, 0) }]
-      .map(function (o) {
-        return { market: o.market, typeLabel: o.typeLabel, price: o.price, size: o.size, sideLabel: o.isLong ? 'BUY' : 'SELL', sideColor: o.isLong ? '#1FC47C' : '#FF4757' };
-      });
-  }
-
-  function fillsData() {
-    return [
-      { time: '14:22:08', market: 'BTC-PERP', isLong: true, price: fmt$(66850, 0), size: fmt$(12450, 0), fee: fmt$(12.45, 2) },
-      { time: '11:05:41', market: 'SOL-PERP', isLong: true, price: fmt$(148.20, 2), size: fmt$(5000, 0), fee: fmt$(5.00, 2) },
-      { time: 'Jun 29 · 22:18', market: 'ETH-PERP', isLong: false, price: fmt$(3512, 0), size: fmt$(8200, 0), fee: fmt$(8.20, 2) },
-      { time: 'Jun 29 · 09:52', market: 'DOGE-PERP', isLong: true, price: fmt$(0.164, 3), size: fmt$(600, 0), fee: fmt$(0.60, 2) },
-    ].map(function (f) {
-      return { time: f.time, market: f.market, price: f.price, size: f.size, fee: f.fee, sideLabel: f.isLong ? 'BUY' : 'SELL', sideColor: f.isLong ? '#1FC47C' : '#FF4757' };
-    });
+  /* ── bottom panel: real positions / open orders / trade history from Hyperliquid ── */
+  function emptyStateRow(colSpan, text) {
+    return '<tr><td colspan="' + colSpan + '" style="padding:24px 14px;text-align:center;color:#4a4a45;font-size:11px;">' + text + '</td></tr>';
   }
 
   function renderBottomPanelInner() {
     var tabDefs = [
-      { key: 'positions', label: 'POSITIONS (3)' },
-      { key: 'orders', label: 'OPEN ORDERS (1)' },
+      { key: 'positions', label: 'POSITIONS (' + ACCOUNT.positions.length + ')' },
+      { key: 'orders', label: 'OPEN ORDERS (' + ACCOUNT.openOrders.length + ')' },
       { key: 'history', label: 'TRADE HISTORY' },
     ];
     var tabsHtml = tabDefs.map(function (bt) {
       return '<button onclick="window.rdoSetBottomTab(\'' + bt.key + '\')" style="' + styleStr(smallTab(STATE.bottomTab === bt.key)) + '">' + bt.label + '</button>';
     }).join('');
 
+    var notConnected = !WALLET.address;
     var body;
     if (STATE.bottomTab === 'positions') {
-      var rows = computePositions().map(function (p) {
-        return '<tr style="border-top:1px solid rgba(255,255,255,0.05);">' +
-          '<td style="padding:9px 14px;color:#F5F1EA;font-weight:700;">' + p.market + '<span style="margin-left:6px;font-size:9.5px;font-weight:700;color:' + p.sideColor + ';">' + p.sideLabel + '</span></td>' +
-          '<td style="padding:9px 14px;color:#c9c9c0;">' + p.size + '</td>' +
-          '<td style="padding:9px 14px;color:#c9c9c0;">' + p.entry + '</td>' +
-          '<td style="padding:9px 14px;color:#c9c9c0;">' + p.mark + '</td>' +
-          '<td style="padding:9px 14px;color:' + p.pnlColor + ';font-weight:700;">' + p.pnlLabel + '</td>' +
-          '<td style="padding:9px 14px;color:#8a8a82;">' + p.liq + '</td>' +
-          '<td style="padding:9px 14px;color:#8a8a82;">' + p.margin + '</td>' +
-          '<td style="padding:9px 14px;"><button style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#8a8a82;font-size:9px;letter-spacing:1px;padding:5px 10px;border-radius:3px;cursor:pointer;">CLOSE</button></td>' +
-        '</tr>';
-      }).join('');
+      var rows = notConnected ? emptyStateRow(8, 'Connect your wallet to see open positions')
+        : (ACCOUNT.positions.length ? ACCOUNT.positions.map(function (p) {
+          return '<tr style="border-top:1px solid rgba(255,255,255,0.05);">' +
+            '<td style="padding:9px 14px;color:#F5F1EA;font-weight:700;">' + p.market + '<span style="margin-left:6px;font-size:9.5px;font-weight:700;color:' + p.sideColor + ';">' + p.sideLabel + '</span></td>' +
+            '<td style="padding:9px 14px;color:#c9c9c0;">' + p.size + '</td>' +
+            '<td style="padding:9px 14px;color:#c9c9c0;">' + p.entry + '</td>' +
+            '<td style="padding:9px 14px;color:#c9c9c0;">' + p.mark + '</td>' +
+            '<td style="padding:9px 14px;color:' + p.pnlColor + ';font-weight:700;">' + p.pnlLabel + '</td>' +
+            '<td style="padding:9px 14px;color:#8a8a82;">' + p.liq + '</td>' +
+            '<td style="padding:9px 14px;color:#8a8a82;">' + p.margin + '</td>' +
+            '<td style="padding:9px 14px;"><button onclick="window.rdoClosePosition(\'' + p.coin + '\',' + p.isLong + ',' + p.sizeAbs + ')" style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#8a8a82;font-size:9px;letter-spacing:1px;padding:5px 10px;border-radius:3px;cursor:pointer;">CLOSE</button></td>' +
+          '</tr>';
+        }).join('') : emptyStateRow(8, 'No open positions'));
       body = '<table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="color:#4a4a45;font-size:9px;letter-spacing:0.5px;text-align:left;">' +
         '<th style="font-weight:600;padding:8px 14px;">MARKET</th><th style="font-weight:600;padding:8px 14px;">SIZE</th><th style="font-weight:600;padding:8px 14px;">ENTRY</th><th style="font-weight:600;padding:8px 14px;">MARK</th><th style="font-weight:600;padding:8px 14px;">PNL</th><th style="font-weight:600;padding:8px 14px;">LIQ.</th><th style="font-weight:600;padding:8px 14px;">MARGIN</th><th style="padding:8px 14px;"></th>' +
         '</tr></thead><tbody>' + rows + '</tbody></table>';
     } else if (STATE.bottomTab === 'orders') {
-      var orows = openOrdersData().map(function (o) {
-        return '<tr style="border-top:1px solid rgba(255,255,255,0.05);">' +
-          '<td style="padding:9px 14px;color:#F5F1EA;font-weight:700;">' + o.market + '</td>' +
-          '<td style="padding:9px 14px;color:#8a8a82;">' + o.typeLabel + '</td>' +
-          '<td style="padding:9px 14px;color:' + o.sideColor + ';font-weight:700;">' + o.sideLabel + '</td>' +
-          '<td style="padding:9px 14px;color:#c9c9c0;">' + o.price + '</td>' +
-          '<td style="padding:9px 14px;color:#c9c9c0;">' + o.size + '</td>' +
-          '<td style="padding:9px 14px;"><button style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#8a8a82;font-size:9px;letter-spacing:1px;padding:5px 10px;border-radius:3px;cursor:pointer;">CANCEL</button></td>' +
-        '</tr>';
-      }).join('');
+      var orows = notConnected ? emptyStateRow(6, 'Connect your wallet to see open orders')
+        : (ACCOUNT.openOrders.length ? ACCOUNT.openOrders.map(function (o) {
+          return '<tr style="border-top:1px solid rgba(255,255,255,0.05);">' +
+            '<td style="padding:9px 14px;color:#F5F1EA;font-weight:700;">' + o.market + '</td>' +
+            '<td style="padding:9px 14px;color:#8a8a82;">' + o.typeLabel + '</td>' +
+            '<td style="padding:9px 14px;color:' + o.sideColor + ';font-weight:700;">' + o.sideLabel + '</td>' +
+            '<td style="padding:9px 14px;color:#c9c9c0;">' + o.price + '</td>' +
+            '<td style="padding:9px 14px;color:#c9c9c0;">' + o.size + '</td>' +
+            '<td style="padding:9px 14px;"><button style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#8a8a82;font-size:9px;letter-spacing:1px;padding:5px 10px;border-radius:3px;cursor:pointer;">CANCEL</button></td>' +
+          '</tr>';
+        }).join('') : emptyStateRow(6, 'No open orders'));
       body = '<table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="color:#4a4a45;font-size:9px;letter-spacing:0.5px;text-align:left;">' +
         '<th style="font-weight:600;padding:8px 14px;">MARKET</th><th style="font-weight:600;padding:8px 14px;">TYPE</th><th style="font-weight:600;padding:8px 14px;">SIDE</th><th style="font-weight:600;padding:8px 14px;">PRICE</th><th style="font-weight:600;padding:8px 14px;">SIZE</th><th style="padding:8px 14px;"></th>' +
         '</tr></thead><tbody>' + orows + '</tbody></table>';
     } else {
-      var frows = fillsData().map(function (f) {
-        return '<tr style="border-top:1px solid rgba(255,255,255,0.05);">' +
-          '<td style="padding:9px 14px;color:#6b6b63;">' + f.time + '</td>' +
-          '<td style="padding:9px 14px;color:#F5F1EA;font-weight:700;">' + f.market + '</td>' +
-          '<td style="padding:9px 14px;color:' + f.sideColor + ';font-weight:700;">' + f.sideLabel + '</td>' +
-          '<td style="padding:9px 14px;color:#c9c9c0;">' + f.price + '</td>' +
-          '<td style="padding:9px 14px;color:#c9c9c0;">' + f.size + '</td>' +
-          '<td style="padding:9px 14px;color:#6b6b63;">' + f.fee + '</td>' +
-        '</tr>';
-      }).join('');
+      var frows = notConnected ? emptyStateRow(6, 'Connect your wallet to see trade history')
+        : (ACCOUNT.fills.length ? ACCOUNT.fills.map(function (f) {
+          return '<tr style="border-top:1px solid rgba(255,255,255,0.05);">' +
+            '<td style="padding:9px 14px;color:#6b6b63;">' + f.time + '</td>' +
+            '<td style="padding:9px 14px;color:#F5F1EA;font-weight:700;">' + f.market + '</td>' +
+            '<td style="padding:9px 14px;color:' + f.sideColor + ';font-weight:700;">' + f.sideLabel + '</td>' +
+            '<td style="padding:9px 14px;color:#c9c9c0;">' + f.price + '</td>' +
+            '<td style="padding:9px 14px;color:#c9c9c0;">' + f.size + '</td>' +
+            '<td style="padding:9px 14px;color:#6b6b63;">' + f.fee + '</td>' +
+          '</tr>';
+        }).join('') : emptyStateRow(6, 'No trade history yet'));
       body = '<table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="color:#4a4a45;font-size:9px;letter-spacing:0.5px;text-align:left;">' +
         '<th style="font-weight:600;padding:8px 14px;">TIME</th><th style="font-weight:600;padding:8px 14px;">MARKET</th><th style="font-weight:600;padding:8px 14px;">SIDE</th><th style="font-weight:600;padding:8px 14px;">PRICE</th><th style="font-weight:600;padding:8px 14px;">SIZE</th><th style="font-weight:600;padding:8px 14px;">FEE</th>' +
         '</tr></thead><tbody>' + frows + '</tbody></table>';
@@ -1197,12 +1439,11 @@
   }
 
   window.rdoInitFundamentals = function () {
-    if (!MARKET) {
-      genMarketData();
-      genPnlData();
-      genMarketsData();
-      genNewsData();
-    }
+    if (!MARKET) genMarketData(); // instant placeholder so first paint isn't empty while HL loads
+    if (!PNL) genPnlData();
+    if (!MARKETS_DATA) genMarketsData();
+    if (!NEWS_DATA) genNewsData();
     render();
+    startMarketPolling(); // fetches real Hyperliquid testnet data and polls every 5s
   };
 })();
