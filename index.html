@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RDO ONE — Trading Terminal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+
+<!-- PAGE WIPE -->
+<div id="pageWipe"><div id="wipeLabel">RDO ONE</div></div>
+
+<!-- GLOBAL BACK BUTTON (shown on both terminals) -->
+<div id="globalBack" class="screen-hidden" onclick="goWelcome()">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+  MENU
+</div>
+
+<!-- ═══════════════════════════════════════
+     LANDING SCREEN
+════════════════════════════════════════ -->
+<div id="landingScreen">
+
+  <nav>
+    <a class="lnd-logo" href="#" onclick="return false">
+      <div class="lnd-logo-dot"></div>RDO ONE
+    </a>
+    <div class="lnd-links">
+      <a class="lnd-link" href="#modes">Terminals</a>
+      <a class="lnd-link" href="#features">Features</a>
+      <a class="lnd-link" href="#" onclick="return false">Docs</a>
+      <a class="lnd-cta" onclick="goWelcome()">Launch App</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="lnd-hero">
+    <div class="lnd-hero-glow"></div>
+    <div class="lnd-eyebrow lnd-reveal">
+      <span class="lnd-tag">V2 — LIVE</span>
+      <div class="lnd-tag-line"></div>
+    </div>
+    <h1 class="lnd-heading lnd-reveal">
+      TRADE<br><span class="orange">FASTER</span><br><span class="outline">THAN THE</span><br>MARKET
+    </h1>
+    <p class="lnd-sub lnd-reveal">
+      One terminal. Every edge. <span>Real-time on-chain intelligence</span>
+      with institutional-grade execution across Solana, Ethereum, Base and BNB.
+    </p>
+    <div class="lnd-btns lnd-reveal">
+      <a class="lnd-btn-primary" onclick="goWelcome()">Launch Terminal</a>
+      <a class="lnd-btn-secondary" href="#modes">View Modes</a>
+    </div>
+    <div class="lnd-ticker lnd-reveal">
+      <div class="lnd-ticker-item">
+        <div><div class="lnd-ticker-pair">SOL/USD</div><div class="lnd-ticker-price">$170.42</div></div>
+        <span class="lnd-ticker-chg up">+6.8%</span>
+      </div>
+      <div class="lnd-ticker-item">
+        <div><div class="lnd-ticker-pair">BTC/USD</div><div class="lnd-ticker-price">$67,814</div></div>
+        <span class="lnd-ticker-chg up">+2.1%</span>
+      </div>
+      <div class="lnd-ticker-item">
+        <div><div class="lnd-ticker-pair">ETH/USD</div><div class="lnd-ticker-price">$3,520</div></div>
+        <span class="lnd-ticker-chg dn">-0.4%</span>
+      </div>
+      <div class="lnd-ticker-item">
+        <div><div class="lnd-ticker-pair">BNB/USD</div><div class="lnd-ticker-price">$618.22</div></div>
+        <span class="lnd-ticker-chg up">+3.2%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <div class="lnd-stats">
+    <div class="lnd-stat-block lnd-reveal">
+      <div class="lnd-stat-num"><span>$2.4</span>B+</div>
+      <div class="lnd-stat-desc">Volume processed</div>
+    </div>
+    <div class="lnd-stat-div"></div>
+    <div class="lnd-stat-block lnd-reveal">
+      <div class="lnd-stat-num"><span>48</span>ms</div>
+      <div class="lnd-stat-desc">Avg execution time</div>
+    </div>
+    <div class="lnd-stat-div"></div>
+    <div class="lnd-stat-block lnd-reveal">
+      <div class="lnd-stat-num"><span>4</span></div>
+      <div class="lnd-stat-desc">Chains supported</div>
+    </div>
+    <div class="lnd-stat-div"></div>
+    <div class="lnd-stat-block lnd-reveal">
+      <div class="lnd-stat-num"><span>99.9</span>%</div>
+      <div class="lnd-stat-desc">Uptime SLA</div>
+    </div>
+  </div>
+
+  <!-- MODES SECTION -->
+  <section class="lnd-section dark" id="modes">
+    <div class="lnd-section-label lnd-reveal">Terminal Modes</div>
+    <h2 class="lnd-section-heading lnd-reveal">Choose your weapon</h2>
+    <p class="lnd-section-sub lnd-reveal">Two purpose-built terminals. One for on-chain alpha hunting, one for structured derivatives trading.</p>
+    <div class="lnd-modes-grid">
+      <div class="lnd-mode-block lnd-reveal" onclick="goWelcome()" style="cursor:pointer;">
+        <div class="lnd-mode-num">01</div>
+        <div class="lnd-mode-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.8" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="lnd-mode-name">INSIDER</div>
+        <p class="lnd-mode-desc">Real-time on-chain intelligence. X Tracker, Dev Wallet Monitor, copy-trade sniper, and live pair discovery across Solana, ETH, Base and BNB.</p>
+        <div class="lnd-mode-features">
+          <div class="lnd-mode-feature">X / Twitter KOL tracker</div>
+          <div class="lnd-mode-feature">Dev wallet monitoring</div>
+          <div class="lnd-mode-feature">Copy-trade sniper</div>
+          <div class="lnd-mode-feature">Live on-chain pairs</div>
+          <div class="lnd-mode-feature">GMGN chart integration</div>
+        </div>
+      </div>
+      <div class="lnd-mode-block lnd-reveal" onclick="goWelcome()" style="cursor:pointer;">
+        <div class="lnd-mode-num">02</div>
+        <div class="lnd-mode-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.8" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="lnd-mode-name">FUNDAMENTALS</div>
+        <p class="lnd-mode-desc">Structured market data. Level-2 order book, multi-asset watchlist, portfolio analytics, and one-click order entry for BTC, ETH, SOL and beyond.</p>
+        <div class="lnd-mode-features">
+          <div class="lnd-mode-feature">Full order book (L2)</div>
+          <div class="lnd-mode-feature">Multi-asset watchlist</div>
+          <div class="lnd-mode-feature">Portfolio analytics</div>
+          <div class="lnd-mode-feature">Limit / market orders</div>
+          <div class="lnd-mode-feature">Stop loss &amp; take profit</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="lnd-section panel" id="features">
+    <div class="lnd-section-label lnd-reveal">Built-in Edge</div>
+    <h2 class="lnd-section-heading lnd-reveal">Everything you need</h2>
+    <div class="lnd-features-grid">
+      <div class="lnd-feature-card lnd-reveal">
+        <div class="lnd-feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div class="lnd-feature-title">Sniper Engine</div>
+        <p class="lnd-feature-desc">Copy-trade any wallet with custom multipliers, auto TP/SL, and honeypot protection. Sub-500ms execution via Jito bundles.</p>
+      </div>
+      <div class="lnd-feature-card lnd-reveal">
+        <div class="lnd-feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.6" stroke-linecap="round"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.845L1.254 2.25H8.08l4.259 5.632 5.905-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <div class="lnd-feature-title">X Intelligence</div>
+        <p class="lnd-feature-desc">Track KOLs, project accounts, and alpha leaks in real-time. Filter by account tier and cross-reference with on-chain activity.</p>
+      </div>
+      <div class="lnd-feature-card lnd-reveal">
+        <div class="lnd-feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.6" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="lnd-feature-title">Live Order Book</div>
+        <p class="lnd-feature-desc">Full L2 depth across BTC, ETH, and SOL with real-time spread tracking and one-click order entry with leverage controls.</p>
+      </div>
+      <div class="lnd-feature-card lnd-reveal">
+        <div class="lnd-feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="lnd-feature-title">Non-Custodial</div>
+        <p class="lnd-feature-desc">Your keys stay in your browser. Keys are never sent to our servers. Full wallet sovereignty with read and trade permissions only.</p>
+      </div>
+      <div class="lnd-feature-card lnd-reveal">
+        <div class="lnd-feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.6" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="lnd-feature-title">Multi-Chain</div>
+        <p class="lnd-feature-desc">Solana, Ethereum, Base and BNB Smart Chain. Switch networks instantly without losing your watchlist or open positions.</p>
+      </div>
+      <div class="lnd-feature-card lnd-reveal">
+        <div class="lnd-feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="1.6" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="lnd-feature-title">PnL Analytics</div>
+        <p class="lnd-feature-desc">Realized and unrealized PnL breakdown, win rate tracking, daily performance charts, and full trade history with export.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="lnd-cta-section">
+    <h2 class="lnd-cta-heading lnd-reveal">READY TO<br><span>EXECUTE</span>?</h2>
+    <p class="lnd-cta-sub lnd-reveal">No sign-up. No KYC. Connect your wallet and start trading in under 60 seconds.</p>
+    <div class="lnd-cta-btns lnd-reveal">
+      <a class="lnd-btn-primary" onclick="goWelcome()">Open Terminal</a>
+      <a class="lnd-btn-secondary" href="#" onclick="return false">Read Docs</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="lnd-footer-logo"><div class="lnd-logo-dot"></div>RDO ONE</div>
+    <div class="lnd-footer-links">
+      <a class="lnd-footer-link">Terms</a>
+      <a class="lnd-footer-link">Privacy</a>
+      <a class="lnd-footer-link">Docs</a>
+      <a class="lnd-footer-link">Discord</a>
+    </div>
+    <div class="lnd-footer-copy">© 2026 RDO ONE. All rights reserved.</div>
+  </footer>
+
+</div><!-- /landingScreen -->
+
+
+<!-- ═══════════════════════════════════════
+     WELCOME SCREEN
+════════════════════════════════════════ -->
+<div id="welcomeScreen" class="screen-hidden">
+  <canvas id="wParticles"></canvas>
+  <div class="w-status">
+    <div class="w-si"><div class="w-conn-dot"></div>CONNECTED</div>
+    <div class="w-si">RDO ONE &nbsp;·&nbsp; SELECT MODE</div>
+    <div class="w-si link" onclick="goLanding()">&#x2190; Back to site</div>
+  </div>
+  <div class="w-corner tl"></div>
+  <div class="w-corner tr"></div>
+  <div class="w-corner bl"></div>
+  <div class="w-corner br"></div>
+
+  <div class="w-inner">
+    <div class="w-eyebrow">Select your terminal</div>
+    <div class="w-logo-wrap">
+      <div class="w-logo-line"></div>
+      <div class="w-logo-text">RDO <span>ONE</span></div>
+      <div class="w-logo-line r"></div>
+    </div>
+    <div class="w-tagline">Real-time execution &nbsp;·&nbsp; On-chain intelligence</div>
+
+    <div class="w-mode-grid">
+      <div class="w-mode-card" onclick="goInsider()">
+        <div class="w-card-num">01</div>
+        <div class="w-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="w-card-label">Mode 01</div>
+        <div class="w-card-title">Insider</div>
+        <div class="w-card-desc">X tracker · Dev wallets · Copy-trade sniper · Live pairs</div>
+        <div class="w-card-cta">Enter terminal <div class="w-cta-arrow"></div></div>
+      </div>
+      <div class="w-mode-card" onclick="goFundamentals()">
+        <div class="w-card-num">02</div>
+        <div class="w-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--o)" stroke-width="2" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="w-card-label">Mode 02</div>
+        <div class="w-card-title">Fundamentals</div>
+        <div class="w-card-desc">Order book · Watchlist · Portfolio analytics · Order entry</div>
+        <div class="w-card-cta">Enter terminal <div class="w-cta-arrow"></div></div>
+      </div>
+    </div>
+
+    <div class="w-bottom-note">Press <span>ESC</span> at any time to return here</div>
+  </div>
+</div><!-- /welcomeScreen -->
+
+
+<!-- ═══════════════════════════════════════
+     FUNDAMENTALS TERMINAL (static mockup)
+════════════════════════════════════════ -->
+<div id="terminalScreen" class="screen-hidden">
+  <div id="fundamentalsRoot"></div>
+</div><!-- /terminalScreen -->
+
+<script src="/src/fundamentals-app.js"></script>
+
+
+<!-- ═══════════════════════════════════════
+     INSIDER TERMINAL (live)
+════════════════════════════════════════ -->
+<div id="insiderScreen" class="screen-hidden">
+
+  <!-- MODALS -->
+  <div class="overlay" id="apiModal"><div class="modal">
+    <div class="mhdr"><div class="mtitle">Connect API Keys</div><button class="mclose" onclick="closeModal('apiModal')">✕</button></div>
+    <div class="mbody">
+      <div class="mf"><div class="mfl">API Key</div><input class="mfi" type="text" placeholder="Enter your API key..."/></div>
+      <div class="mf"><div class="mfl">Secret Key</div><input class="mfi" type="password" placeholder="Enter your secret key..."/></div>
+      <div class="mf"><div class="mfl">Wallet Address (optional)</div><input class="mfi" type="text" placeholder="0x... or base58..."/></div>
+      <div class="m-note">⚠ Keys stored locally and never sent to our servers. Use read + trade permissions only. Never enable withdrawal.</div>
+      <button class="m-btn">CONNECT &amp; VERIFY</button>
+    </div>
+  </div></div>
+
+  <div class="overlay" id="historyModal"><div class="modal" style="width:530px;">
+    <div class="mhdr"><div class="mtitle">Trade History</div><button class="mclose" onclick="closeModal('historyModal')">✕</button></div>
+    <div class="mbody" style="padding:0;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr style="background:var(--raised);">
+          <th style="font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--mid);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border);font-weight:400;">TOKEN</th>
+          <th style="font-family:var(--mono);font-size:8px;color:var(--mid);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border);font-weight:400;">SIDE</th>
+          <th style="font-family:var(--mono);font-size:8px;color:var(--mid);padding:8px 14px;text-align:right;border-bottom:1px solid var(--border);font-weight:400;">AMOUNT</th>
+          <th style="font-family:var(--mono);font-size:8px;color:var(--mid);padding:8px 14px;text-align:right;border-bottom:1px solid var(--border);font-weight:400;">PnL</th>
+          <th style="font-family:var(--mono);font-size:8px;color:var(--mid);padding:8px 14px;text-align:right;border-bottom:1px solid var(--border);font-weight:400;">TIME</th>
+        </tr></thead>
+        <tbody id="histTbody">
+          <tr><td style="font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);">BONK</td><td style="padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="background:var(--gd);color:var(--g);font-family:var(--mono);font-size:8px;padding:2px 6px;border-radius:2px;font-weight:700;">BUY</span></td><td style="font-family:var(--mono);font-size:11px;text-align:right;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--mid);">0.5 SOL</td><td style="font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--g);">+$1,820</td><td style="font-family:var(--mono);font-size:9px;text-align:right;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--mid);">2h ago</td></tr>
+          <tr><td style="font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);">WIF</td><td style="padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="background:var(--rd);color:var(--r);font-family:var(--mono);font-size:8px;padding:2px 6px;border-radius:2px;font-weight:700;">SELL</span></td><td style="font-family:var(--mono);font-size:11px;text-align:right;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--mid);">0.2 SOL</td><td style="font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--r);">-$240</td><td style="font-family:var(--mono);font-size:9px;text-align:right;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--mid);">5h ago</td></tr>
+          <tr><td style="font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 14px;">POPCAT</td><td style="padding:8px 14px;"><span style="background:var(--gd);color:var(--g);font-family:var(--mono);font-size:8px;padding:2px 6px;border-radius:2px;font-weight:700;">BUY</span></td><td style="font-family:var(--mono);font-size:11px;text-align:right;padding:8px 14px;color:var(--mid);">1.0 SOL</td><td style="font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;padding:8px 14px;color:var(--g);">+$4,100</td><td style="font-family:var(--mono);font-size:9px;text-align:right;padding:8px 14px;color:var(--mid);">1d ago</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+
+  <div class="overlay" id="pnlModal"><div class="modal">
+    <div class="mhdr"><div class="mtitle">PnL Analytics</div><button class="mclose" onclick="closeModal('pnlModal')">✕</button></div>
+    <div class="mbody">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--mid);text-transform:uppercase;margin-bottom:4px;">Realized PnL</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--g);">+$8,460</div></div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--mid);text-transform:uppercase;margin-bottom:4px;">Unrealized PnL</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--o);">+$1,240</div></div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--mid);text-transform:uppercase;margin-bottom:4px;">Win Rate</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--o);">72.4%</div></div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--mid);text-transform:uppercase;margin-bottom:4px;">Total Trades</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;">184</div></div>
+      </div>
+      <div style="background:var(--raised);border:1px solid var(--border);border-radius:3px;padding:13px;">
+        <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--mid);text-transform:uppercase;margin-bottom:9px;">Daily PnL — Last 7 Days</div>
+        <svg viewBox="0 0 400 90" style="width:100%;display:block;">
+          <line x1="0" y1="45" x2="400" y2="45" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+          <rect x="8" y="22" width="38" height="23" class="chart-bar-g" rx="2"/>
+          <rect x="68" y="32" width="38" height="13" class="chart-bar-g" rx="2"/>
+          <rect x="128" y="47" width="38" height="18" class="chart-bar-r" rx="2"/>
+          <rect x="188" y="10" width="38" height="35" class="chart-bar-g" rx="2"/>
+          <rect x="248" y="43" width="38" height="2" class="chart-bar-r" rx="2"/>
+          <rect x="308" y="17" width="38" height="28" class="chart-bar-g" rx="2"/>
+          <rect x="356" y="8" width="38" height="37" class="chart-bar-o" rx="2"/>
+          <text x="27" y="82" font-family="'JetBrains Mono',monospace" font-size="8" fill="#333" text-anchor="middle">Mon</text>
+          <text x="87" y="82" font-family="'JetBrains Mono',monospace" font-size="8" fill="#333" text-anchor="middle">Tue</text>
+          <text x="147" y="82" font-family="'JetBrains Mono',monospace" font-size="8" fill="#333" text-anchor="middle">Wed</text>
+          <text x="207" y="82" font-family="'JetBrains Mono',monospace" font-size="8" fill="#333" text-anchor="middle">Thu</text>
+          <text x="267" y="82" font-family="'JetBrains Mono',monospace" font-size="8" fill="#333" text-anchor="middle">Fri</text>
+          <text x="327" y="82" font-family="'JetBrains Mono',monospace" font-size="8" fill="#333" text-anchor="middle">Sat</text>
+          <text x="375" y="82" font-family="'JetBrains Mono',monospace" font-size="8" fill="#333" text-anchor="middle">Sun</text>
+        </svg>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="overlay" id="addWalletModal"><div class="modal" style="width:450px;">
+    <div class="mhdr"><div class="mtitle">Add Wallet</div><button class="mclose" onclick="closeModal('addWalletModal')">✕</button></div>
+    <div class="mbody">
+      <div class="mf"><div class="mfl">Wallet Name</div><input class="mfi" id="nwName" type="text" placeholder="e.g. Trading Wallet 2"/></div>
+      <div class="mf">
+        <div class="mfl">Chain</div>
+        <div class="chain-sel" id="nwChainSel">
+          <div class="cs-btn active" data-chain="sol" onclick="selWalletChain(this)">SOL</div>
+          <div class="cs-btn" data-chain="eth" onclick="selWalletChain(this)">ETH</div>
+          <div class="cs-btn" data-chain="base" onclick="selWalletChain(this)">BASE</div>
+          <div class="cs-btn" data-chain="bsc" onclick="selWalletChain(this)">BSC</div>
+        </div>
+      </div>
+      <div class="mf">
+        <div class="mfl">Private Key <span style="color:var(--mid);font-size:9px;">(optional — auto-derives address)</span></div>
+        <input class="mfi" id="nwKey" type="password" placeholder="Base58 secret key (64-byte)…"/>
+        <div id="nwKeyStatus"></div>
+      </div>
+      <div class="mf"><div class="mfl">Address <span style="color:var(--mid);font-size:9px;">auto-filled from key, or enter manually</span></div><input class="mfi" id="nwAddr" type="text" placeholder="Solana base58 public key…"/></div>
+      <div class="m-note">⚠ Private key is stored in your browser's local storage. Never use on a shared or public device.</div>
+      <button class="m-btn" id="nwBtn" onclick="addWallet()">ADD WALLET</button>
+    </div>
+  </div></div>
+
+  <div class="overlay" id="addAccModal"><div class="modal" style="width:430px;">
+    <div class="mhdr"><div class="mtitle">Add Account to Tracker</div><button class="mclose" onclick="closeModal('addAccModal')">✕</button></div>
+    <div class="mbody">
+      <div class="mf"><div class="mfl">X / Twitter Handle</div><input class="mfi" type="text" placeholder="@username"/></div>
+      <div class="mf"><div class="mfl">Category</div><select class="mfi" style="appearance:none;cursor:pointer;"><option>KOL</option><option>Project</option><option>Trader</option></select></div>
+      <div class="mf"><div class="mfl">Notes (optional)</div><input class="mfi" type="text" placeholder="Why are you tracking this account?"/></div>
+      <button class="m-btn">ADD ACCOUNT</button>
+    </div>
+  </div></div>
+
+  <div class="overlay" id="addSnipeModal"><div class="modal" style="width:440px;">
+    <div class="mhdr"><div class="mtitle">Add Wallet to Snipe</div><button class="mclose" onclick="closeModal('addSnipeModal')">✕</button></div>
+    <div class="mbody">
+      <div class="mf"><div class="mfl">Wallet Label</div><input class="mfi" id="snName" type="text" placeholder="e.g. AlphaWhale01"/></div>
+      <div class="mf"><div class="mfl">Wallet Address</div><input class="mfi" id="snAddr" type="text" placeholder="Wallet address to copy-trade..."/></div>
+      <div class="mf"><div class="mfl">Buy Multiplier</div><select class="mfi" style="appearance:none;cursor:pointer;"><option>1x</option><option>0.5x</option><option>0.25x</option><option>2x</option></select></div>
+      <div class="m-note">This wallet's trades will be mirrored by the sniper with your configured fee mode and safety filters.</div>
+      <button class="m-btn" onclick="addSnipe()">ADD &amp; START COPYING</button>
+    </div>
+  </div></div>
+
+  <!-- SNIPER PAGE -->
+  <div class="sniper-pg" id="sniperPg">
+    <div class="sp-hdr">
+      <div class="sp-title">SNIPER</div>
+      <div class="sp-sub" id="spNet">SOL Network &middot; Copy-Trade</div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:11px;">
+        <div class="sp-status offline" id="spBadge">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--g);"></div>
+          OFFLINE
+        </div>
+        <button class="sp-back" onclick="closeSniperPg()">&#x2190; Back</button>
+      </div>
+    </div>
+    <div class="sp-body">
+      <div class="sp-side">
+        <div class="sp-sh">
+          <div class="sp-sh-t">Snipe Wallets <span style="color:var(--o);font-family:var(--mono);font-size:9px;" id="snipeCnt">(4)</span></div>
+        </div>
+        <div class="sw-bar">
+          <input class="sw-inp" type="text" placeholder="Search by name or address..."/>
+          <button class="sw-add-btn" onclick="openModal('addSnipeModal')">+ Add</button>
+        </div>
+        <div class="sw-list" id="snipeList">
+          <div class="sw-item"><div class="sw-av" style="background:rgba(255,92,0,0.15);color:var(--o);">AW</div><div class="sw-info"><div class="sw-name">AlphaWhale01<span class="sw-tag">1x</span></div><div class="sw-addr">9xFa...2kRp</div></div><div class="sw-stats"><div class="sw-stat"><div class="sw-sl">PnL 30D</div><div class="sw-sv pos">+$48K</div></div><div class="sw-stat"><div class="sw-sl">Win</div><div class="sw-sv" style="color:var(--o);">78%</div></div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div><button class="sw-del" onclick="this.closest('.sw-item').remove();updateCnt()">✕</button></div>
+          <div class="sw-item"><div class="sw-av" style="background:rgba(61,219,122,0.12);color:var(--g);">DK</div><div class="sw-info"><div class="sw-name">DegenKing<span class="sw-tag">0.5x</span></div><div class="sw-addr">4mKz...9pQr</div></div><div class="sw-stats"><div class="sw-stat"><div class="sw-sl">PnL 30D</div><div class="sw-sv pos">+$32K</div></div><div class="sw-stat"><div class="sw-sl">Win</div><div class="sw-sv" style="color:var(--o);">71%</div></div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div><button class="sw-del" onclick="this.closest('.sw-item').remove();updateCnt()">✕</button></div>
+          <div class="sw-item"><div class="sw-av" style="background:rgba(255,68,85,0.12);color:var(--r);">MN</div><div class="sw-info"><div class="sw-name">MoonNinja<span class="sw-tag">2x</span></div><div class="sw-addr">3aLp...6kEv</div></div><div class="sw-stats"><div class="sw-stat"><div class="sw-sl">PnL 30D</div><div class="sw-sv pos">+$84K</div></div><div class="sw-stat"><div class="sw-sl">Win</div><div class="sw-sv" style="color:var(--o);">82%</div></div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div><button class="sw-del" onclick="this.closest('.sw-item').remove();updateCnt()">✕</button></div>
+          <div class="sw-item" style="opacity:0.5;"><div class="sw-av" style="background:#1a1a1a;color:#666;">RZ</div><div class="sw-info"><div class="sw-name">RektZoomer<span class="sw-tag">1x</span></div><div class="sw-addr">8nQk...1pHx</div></div><div class="sw-stats"><div class="sw-stat"><div class="sw-sl">PnL 30D</div><div class="sw-sv neg">-$4K</div></div><div class="sw-stat"><div class="sw-sl">Win</div><div class="sw-sv" style="color:var(--r);">42%</div></div></div><div class="tgl" onclick="this.classList.toggle('on')"></div><button class="sw-del" onclick="this.closest('.sw-item').remove();updateCnt()">✕</button></div>
+        </div>
+      </div>
+      <div class="sp-side">
+        <div class="sp-sh"><div class="sp-sh-t">Sniper Settings</div></div>
+        <div style="padding:12px 18px 0;font-family:var(--mono);font-size:8px;letter-spacing:1.5px;color:var(--o);text-transform:uppercase;font-weight:700;margin-bottom:5px;">Fee Mode</div>
+        <div class="fee-modes">
+          <div class="fee-m" onclick="selFee(this)"><div class="fm-n">BASIC</div><div class="fm-f">0.0001 SOL</div><div class="fm-d">Low ~3-8s</div></div>
+          <div class="fee-m on" onclick="selFee(this)"><div class="fm-n">FAST</div><div class="fm-f">0.001 SOL</div><div class="fm-d">Recommended ~1s</div></div>
+          <div class="fee-m" onclick="selFee(this)"><div class="fm-n">ULTRA</div><div class="fm-f">0.005 SOL</div><div class="fm-d">Front-run &lt;500ms</div></div>
+        </div>
+        <div class="sp-presets">
+          <div class="sp-block"><div class="sp-bt">Buy Settings</div><div class="sp-grid">
+            <div class="spf"><div class="spfl">Buy Amount (SOL)</div><input class="spfi" value="0.5" type="number"/></div>
+            <div class="spf"><div class="spfl">Slippage %</div><input class="spfi" value="15" type="number"/></div>
+            <div class="spf"><div class="spfl">Jito Tip (SOL)</div><input class="spfi" value="0.003" type="number"/></div>
+            <div class="spf"><div class="spfl">Max Per Trade ($)</div><input class="spfi" value="500" type="number"/></div>
+          </div></div>
+          <div class="sp-block"><div class="sp-bt">Auto-Sell / Protection</div><div class="sp-grid">
+            <div class="spf"><div class="spfl">Take Profit %</div><input class="spfi" value="200" type="number"/></div>
+            <div class="spf"><div class="spfl">Stop Loss %</div><input class="spfi" value="30" type="number"/></div>
+            <div class="spf"><div class="spfl">Trailing TP %</div><input class="spfi" value="15" type="number"/></div>
+            <div class="spf"><div class="spfl">Max Hold (mins)</div><input class="spfi" value="60" type="number"/></div>
+          </div></div>
+          <div class="sp-block"><div class="sp-bt">Safety Filters</div>
+            <div class="tog-row"><span class="tog-lbl">Skip Honeypot</span><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="tog-row"><span class="tog-lbl">LP Must Be Burned</span><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="tog-row"><span class="tog-lbl">Contract Renounced</span><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="tog-row"><span class="tog-lbl">Skip Mintable Tokens</span><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="tog-row"><span class="tog-lbl">Auto-Sell on Dev Dump</span><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+            <div class="tog-row"><span class="tog-lbl">Skip Bundle Buys &gt;30%</span><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+        </div>
+        <button class="sniper-launch" id="sniperLaunch" onclick="toggleSniper()">ACTIVATE SNIPER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIDER LAYOUT -->
+  <div style="display:flex;flex-direction:column;flex:1;min-height:0;">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="logo"><div class="logo-dot"></div>RDO ONE<div class="logo-badge">INSIDER</div></div>
+      <div class="tsep"></div>
+      <div class="net-sw" id="netSw">
+        <div class="net-btn active" onclick="selNet(this,'SOL')">SOL</div>
+        <div class="net-btn" onclick="selNet(this,'BASE')">BASE</div>
+        <div class="net-btn" onclick="selNet(this,'BNB')">BNB</div>
+        <div class="net-btn" onclick="selNet(this,'ETH')">ETH</div>
+      </div>
+      <div class="ca-wrap">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="caIn" placeholder="Paste contract address or token name..."/>
+        <button class="ca-paste" onclick="pasteCA()">PASTE</button>
+      </div>
+      <div class="tsep"></div>
+      <button class="tbtn" onclick="openModal('historyModal')">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History
+      </button>
+      <button class="tbtn" onclick="openModal('pnlModal')">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>PnL
+      </button>
+      <button class="tbtn sniper-btn" id="sniperTopBtn" onclick="openSniperPg()">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>Sniper
+      </button>
+      <div class="tbtn" onclick="goWelcome()" style="color:var(--o);border-color:rgba(255,92,0,0.22);">&#x2190; Menu</div>
+      <div class="top-r">
+        <div class="clock" id="topClock">UTC 00:00:00<span class="blink">_</span></div>
+        <button class="conn-btn" onclick="openModal('apiModal')">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Connect API
+        </button>
+        <div class="icon-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN 3-COL LAYOUT -->
+    <div class="layout">
+
+      <!-- LEFT: X TRACKER -->
+      <div class="col" id="colL">
+        <div class="ph">
+          <div class="ph-title">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--o)"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.845L1.254 2.25H8.08l4.259 5.632 5.905-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X Tracker
+          </div>
+          <button class="add-acc" onclick="openModal('addAccModal')">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Account
+          </button>
+        </div>
+        <div class="tw-tabs">
+          <div class="tw-tab on" onclick="setTwTab(this,'ALL')">All</div>
+          <div class="tw-tab" onclick="setTwTab(this,'KOL')">KOL</div>
+          <div class="tw-tab" onclick="setTwTab(this,'PROJECT')">Projects</div>
+        </div>
+        <div class="tw-search"><input type="text" placeholder="Search tweets or @handle..."/></div>
+        <div class="tw-feed" id="twFeed">
+          <div class="tweet" data-type="KOL">
+            <div class="tw-top"><div class="tw-av" style="background:rgba(255,92,0,0.14);color:var(--o);">MU</div><div class="tw-info"><div class="tw-handle">@MuradMahmudov<span class="kol-badge">&#10003; KOL</span></div><div class="tw-meta">284K followers</div></div><div class="tw-time">2m</div></div>
+            <div class="tw-text">The memecoin supercycle is just beginning. <span class="tok">#BONK</span> is digital internet culture. Accumulating heavily.</div>
+          </div>
+          <div class="tweet" data-type="PROJECT">
+            <div class="tw-top"><div class="tw-av" style="background:rgba(61,219,122,0.12);color:var(--g);">BP</div><div class="tw-info"><div class="tw-handle">@BonkProject<span class="proj-badge">&#x2605; PROJECT</span></div><div class="tw-meta">Official &middot; 128K followers</div></div><div class="tw-time">7m</div></div>
+            <div class="tw-text">New <span class="tok">#BONK</span> integration live on Jupiter. Zero fees for 24h. Join our community &#x1F525;</div>
+          </div>
+          <div class="tweet" data-type="KOL">
+            <div class="tw-top"><div class="tw-av" style="background:rgba(255,92,0,0.12);color:var(--o);">SB</div><div class="tw-info"><div class="tw-handle">@solbull<span class="kol-badge">&#10003; KOL</span></div><div class="tw-meta">48K followers</div></div><div class="tw-time">15m</div></div>
+            <div class="tw-text"><span class="tok">#WIF</span> breaking out of wedge on 1H. If it holds 0.30, target is 0.40. Strong hands only.</div>
+          </div>
+          <div class="tweet" data-type="KOL">
+            <div class="tw-top"><div class="tw-av" style="background:rgba(255,68,85,0.12);color:var(--r);">DG</div><div class="tw-info"><div class="tw-handle">@DegenGod<span class="kol-badge">&#10003; KOL</span></div><div class="tw-meta">120K followers</div></div><div class="tw-time">23m</div></div>
+            <div class="tw-text">New play: <span class="tok">#POPCAT</span> consolidating after 5x. Loading bags for next leg &#x1F408;</div>
+          </div>
+          <div class="tweet" data-type="PROJECT">
+            <div class="tw-top"><div class="tw-av" style="background:rgba(61,219,122,0.1);color:var(--g);">WP</div><div class="tw-info"><div class="tw-handle">@WifProject<span class="proj-badge">&#x2605; PROJECT</span></div><div class="tw-meta">Official &middot; 84K followers</div></div><div class="tw-time">31m</div></div>
+            <div class="tw-text"><span class="tok">#WIF</span> x Coinbase listing confirmed. 48h. The dog stays on. &#x1F436;</div>
+          </div>
+          <div class="tweet" data-type="KOL">
+            <div class="tw-top"><div class="tw-av" style="background:rgba(255,92,0,0.1);color:var(--o);">RA</div><div class="tw-info"><div class="tw-handle">@RektAnon<span class="kol-badge">&#10003; KOL</span></div><div class="tw-meta">67K followers</div></div><div class="tw-time">44m</div></div>
+            <div class="tw-text">Why <span class="tok">#PEPE</span> goes to $10B this cycle &#x1F9F5; 1/ The frog has survived every bear market.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-res" data-col="colL" data-side="right"></div>
+
+      <!-- CENTER: PAIRS + DEV WALLET -->
+      <div class="col col-c">
+        <div class="cp-hdr">
+          <div>
+            <div class="cp-net" id="cpNet">SOLANA MEMECOIN</div>
+            <div class="cp-sym" id="cpSym">BONK / SOL</div>
+          </div>
+          <div class="cp-sdiv"></div>
+          <div>
+            <div class="cp-price pos" id="cpPrice">$0.00002841</div>
+            <div style="display:flex;align-items:center;gap:7px;margin-top:3px;">
+              <span class="cp-chg pos" id="cpChg">+28.4%</span>
+              <span style="font-family:var(--mono);font-size:8px;color:var(--mid);">24H</span>
+            </div>
+          </div>
+          <div class="cp-stats">
+            <div><div class="cps-l">MCap</div><div class="cps-v" id="cpMcap">$1.82B</div></div>
+            <div><div class="cps-l">Vol 24H</div><div class="cps-v">$48.2M</div></div>
+            <div><div class="cps-l">Liq.</div><div class="cps-v">$12.4M</div></div>
+            <div><div class="cps-l">Holders</div><div class="cps-v">842K</div></div>
+          </div>
+          <button class="cp-watch">&#9733; Watch</button>
+        </div>
+
+        <div class="chart-area" id="chartArea">
+          <button class="chart-toggle" onclick="toggleChart()">HIDE CHART</button>
+          <iframe id="chartFrame" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
+        </div>
+        <div class="v-res" id="chartRes"></div>
+
+        <div class="ct-tabs">
+          <div class="ct-tab active" id="tabPairs"  onclick="setCenterTab('pairs')">PAIRS</div>
+          <div class="ct-tab"        id="tabTrades" onclick="setCenterTab('trades')">
+            <div class="dw-live" style="display:inline-block;vertical-align:middle;margin-right:4px;"></div>LIVE TRADES
+          </div>
+        </div>
+
+        <div class="pcols" id="pcolsWrap">
+          <div class="pch">Token</div>
+          <div class="pch r">Price</div>
+          <div class="pch r">24H</div>
+          <div class="pch r">MCap</div>
+          <div class="pch r">Safety</div>
+        </div>
+        <div class="lo-wrap" id="loWrap">
+          <div class="lo-hdr">
+            <div class="dw-live"></div>
+            <span id="loToken">—</span>
+            <span id="loStatus">waiting…</span>
+          </div>
+          <div class="lo-cols">
+            <div class="lo-ch">SIDE</div>
+            <div class="lo-ch lo-r">AMOUNT</div>
+            <div class="lo-ch lo-r">PRICE</div>
+            <div class="lo-ch lo-r">WALLET</div>
+            <div class="lo-ch lo-r">TIME</div>
+          </div>
+          <div class="lo-list" id="loList">
+            <div class="lo-empty">Select a token to see live trades</div>
+          </div>
+        </div>
+
+        <div class="plist" id="plistWrap">
+          <div class="prow active" onclick="selPair(this,'BONK / SOL','$0.00002841','+28.4%','$1.82B','pos','DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263','sol')">
+            <div><div class="pr-sym"><div class="pr-dot" style="background:#F7931A;"></div>BONK</div><div class="pr-name">Bonk &middot; Solana</div><div class="pr-bgs"><span class="pb pb-s">LP&#x2713;</span><span class="pb pb-s">REN</span></div></div>
+            <div class="pv pos">0.00002841</div><div class="pv pos">+28.4%</div><div class="pm">$1.82B</div><div><span class="pb pb-s">SAFE</span></div>
+          </div>
+          <div class="prow" onclick="selPair(this,'WIF / SOL','$0.3142','+12.1%','$312M','pos','EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm','sol')">
+            <div><div class="pr-sym"><div class="pr-dot" style="background:#9945FF;"></div>WIF</div><div class="pr-name">dogwifhat &middot; Solana</div><div class="pr-bgs"><span class="pb pb-s">LP&#x2713;</span><span class="pb pb-w">5% DEV</span></div></div>
+            <div class="pv pos">0.3142</div><div class="pv pos">+12.1%</div><div class="pm">$312M</div><div><span class="pb pb-w">WATCH</span></div>
+          </div>
+          <div class="prow" onclick="selPair(this,'POPCAT / SOL','$0.4821','+5.8%','$481M','pos','7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr','sol')">
+            <div><div class="pr-sym"><div class="pr-dot" style="background:#14F195;"></div>POPCAT</div><div class="pr-name">Popcat &middot; Solana</div><div class="pr-bgs"><span class="pb pb-s">LP&#x2713;</span><span class="pb pb-s">REN</span></div></div>
+            <div class="pv pos">0.4821</div><div class="pv pos">+5.8%</div><div class="pm">$481M</div><div><span class="pb pb-s">SAFE</span></div>
+          </div>
+          <div class="prow" onclick="selPair(this,'FWOG / SOL','$0.00214','+142%','$2.1M','pos','A8C3xuqscfmyLrte3VwWqPQqSrdAYk8HXfcYxQwUemit','sol')">
+            <div><div class="pr-sym"><div class="pr-dot" style="background:#FF7A2F;"></div>FWOG</div><div class="pr-name">Fwog &middot; New</div><div class="pr-bgs"><span class="pb pb-w">NEW</span><span class="pb pb-s">LP&#x2713;</span></div></div>
+            <div class="pv pos">0.00214</div><div class="pv pos">+142%</div><div class="pm">$2.1M</div><div><span class="pb pb-w">DYOR</span></div>
+          </div>
+          <div class="prow" onclick="selPair(this,'MEW / SOL','$0.00841','-8.2%','$84M','neg','MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5','sol')">
+            <div><div class="pr-sym"><div class="pr-dot" style="background:#FF4455;"></div>MEW</div><div class="pr-name">cat in a dogs world</div><div class="pr-bgs"><span class="pb pb-s">LP&#x2713;</span><span class="pb pb-r">MINT</span></div></div>
+            <div class="pv neg">0.00841</div><div class="pv neg">-8.2%</div><div class="pm">$84M</div><div><span class="pb pb-r">RISK</span></div>
+          </div>
+          <div class="prow" onclick="selPair(this,'PEPE / ETH','$0.00001284','+3.1%','$5.4B','pos','0x6982508145454Ce325dDbE47a25d4ec3d2311933','eth')">
+            <div><div class="pr-sym"><div class="pr-dot" style="background:#3DDB7A;"></div>PEPE</div><div class="pr-name">Pepe &middot; Ethereum</div><div class="pr-bgs"><span class="pb pb-s">LP&#x2713;</span><span class="pb pb-s">REN</span></div></div>
+            <div class="pv pos">0.00001284</div><div class="pv pos">+3.1%</div><div class="pm">$5.4B</div><div><span class="pb pb-s">SAFE</span></div>
+          </div>
+          <div class="prow" onclick="selPair(this,'SLOTH / SOL','$0.000048','+84%','$480K','pos','8Nc2MBTUHnMBNMBp6EfEHt2xKrPv1ZXvRswFnCYHcMR9','sol')">
+            <div><div class="pr-sym"><div class="pr-dot" style="background:#888;"></div>SLOTH</div><div class="pr-name">Sloth &middot; Low Cap</div><div class="pr-bgs"><span class="pb pb-w">NEW</span><span class="pb pb-w">2% DEV</span></div></div>
+            <div class="pv pos">0.000048</div><div class="pv pos">+84%</div><div class="pm">$480K</div><div><span class="pb pb-w">DYOR</span></div>
+          </div>
+        </div>
+
+        <div class="v-res" id="vRes"></div>
+
+        <div class="dw-panel" id="dwPanel">
+          <div class="ph">
+            <div class="ph-title">
+              <div class="dw-live"></div>
+              Dev Wallet Monitor
+              <span style="font-family:var(--mono);font-size:8px;background:var(--of);color:var(--o);padding:1px 6px;border-radius:2px;" id="dwCount">3 WALLETS</span>
+            </div>
+            <button class="dw-add" onclick="addDwPrompt()">+ ADD</button>
+          </div>
+          <div class="dw-cols">
+            <div class="dwch">Wallet</div>
+            <div class="dwch">Label</div>
+            <div class="dwch r">Last Deposit</div>
+            <div class="dwch r">Balance</div>
+            <div class="dwch r">Status</div>
+          </div>
+          <div class="dw-list" id="dwList">
+            <div class="dw-row">
+              <div><div class="dw-addr">9xFa...2kRp</div><div class="dw-net">Solana</div></div>
+              <div class="dw-lbl"><div class="dw-sdot" style="background:var(--g);color:var(--g);"></div>Dev Wallet Alpha</div>
+              <div><div class="dw-dep pos">+84.2 SOL</div><div class="dw-sub">12m ago</div></div>
+              <div class="dw-bal">142.8 SOL</div>
+              <div><span class="dw-badge dw-f">FUNDED</span></div>
+            </div>
+            <div class="dw-row">
+              <div><div class="dw-addr">4mKz...9pQr</div><div class="dw-net">Solana</div></div>
+              <div class="dw-lbl"><div class="dw-sdot" style="background:var(--o);color:var(--o);"></div>Dev Wallet Beta</div>
+              <div><div class="dw-dep neg">-22.4 SOL</div><div class="dw-sub">3m ago</div></div>
+              <div class="dw-bal">18.2 SOL</div>
+              <div><span class="dw-badge dw-w">WATCH</span></div>
+            </div>
+            <div class="dw-row">
+              <div><div class="dw-addr">7tBw...5nLs</div><div class="dw-net">Solana</div></div>
+              <div class="dw-lbl"><div class="dw-sdot" style="background:var(--r);color:var(--r);"></div>Dev Wallet Gamma</div>
+              <div><div class="dw-dep neg">-142.0 SOL</div><div class="dw-sub">1h ago</div></div>
+              <div class="dw-bal" style="color:var(--mid);">0.1 SOL</div>
+              <div><span class="dw-badge dw-d">DUMPED</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-res" data-col="colR" data-side="left"></div>
+
+      <!-- RIGHT: ACCOUNT -->
+      <div class="col" id="colR">
+        <div class="ws-wrap">
+          <div class="ws-hdr">
+            <span>Wallets</span>
+            <span class="ws-add" onclick="openModal('addWalletModal')">+ Add Wallet</span>
+          </div>
+          <div id="walletList">
+            <div class="wi on" onclick="switchWallet(this)">
+              <div class="wi-dot" style="background:var(--o);"></div>
+              <div class="wi-info"><div class="wi-name">Main Trader</div><div class="wi-addr">9xFa...2kRp</div></div>
+              <div><div class="wi-bal">24.8 SOL</div><div class="wi-usd">$4,216</div></div>
+              <div class="wi-active">ACTIVE</div>
+            </div>
+            <div class="wi" onclick="switchWallet(this)">
+              <div class="wi-dot" style="background:#555;"></div>
+              <div class="wi-info"><div class="wi-name">Sniper Wallet</div><div class="wi-addr">4mKz...9pQr</div></div>
+              <div><div class="wi-bal">8.2 SOL</div><div class="wi-usd">$1,392</div></div>
+            </div>
+            <div class="wi" onclick="switchWallet(this)">
+              <div class="wi-dot" style="background:var(--g);"></div>
+              <div class="wi-info"><div class="wi-name">Cold Storage</div><div class="wi-addr">7tBw...5nLs</div></div>
+              <div><div class="wi-bal">142.0 SOL</div><div class="wi-usd">$24,100</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-l">Balance</div><div class="stat-v">24.8 SOL</div></div>
+          <div class="stat-box"><div class="stat-l">USD Value</div><div class="stat-v">$4,216</div></div>
+          <div class="stat-box"><div class="stat-l">Today PnL</div><div class="stat-v pos">+$841</div></div>
+          <div class="stat-box"><div class="stat-l">Win Rate</div><div class="stat-v" style="color:var(--o);">72%</div></div>
+        </div>
+
+        <div class="qt-panel" id="qtPanel">
+          <div class="qt-tabs">
+            <div class="qt-tab buy on" onclick="setQtSide('buy')">BUY</div>
+            <div class="qt-tab sell" onclick="setQtSide('sell')">SELL</div>
+          </div>
+          <div class="qt-form">
+            <div class="qt-field">
+              <div class="qt-lbl">Token <span id="qtToken" style="color:var(--o);">BONK</span></div>
+              <input class="qt-inp" id="qtCA" type="text" placeholder="Contract address..." readonly style="font-size:9px;color:var(--mid);"/>
+            </div>
+            <div class="qt-field">
+              <div class="qt-lbl" style="display:flex;justify-content:space-between;align-items:center;">
+                <span>Amount (<span id="qtNative">SOL</span>)</span>
+                <span id="qtUsdPreview" style="font-family:var(--mono);font-size:9px;color:var(--mid);"></span>
+              </div>
+              <input class="qt-inp" id="qtAmount" type="number" placeholder="0.1" value="0.1" step="0.01"/>
+            </div>
+            <div class="qt-row">
+              <div class="qt-preset" onclick="setQtAmt(0.05)">0.05</div>
+              <div class="qt-preset on" onclick="setQtAmt(0.1)">0.1</div>
+              <div class="qt-preset" onclick="setQtAmt(0.25)">0.25</div>
+              <div class="qt-preset" onclick="setQtAmt(0.5)">0.5</div>
+              <div class="qt-preset" onclick="setQtAmt(1.0)">1.0</div>
+            </div>
+            <div class="qt-field">
+              <div class="qt-lbl">Slippage %</div>
+              <input class="qt-inp" id="qtSlippage" type="number" placeholder="10" value="10" step="1"/>
+            </div>
+            <div id="qtQuoteInfo" style="font-family:var(--mono);font-size:9px;color:var(--mid);padding:4px 0;display:none;"></div>
+            <button class="qt-submit buy-btn" id="qtSubmit" onclick="executeQuickTrade()">GET QUOTE</button>
+          </div>
+          <div class="qt-status" id="qtStatus"></div>
+        </div>
+
+        <div class="pnl-sec">
+          <div class="pnl-hdr">
+            <div class="pnl-hdr-t">PnL Summary</div>
+            <span class="ph-action" onclick="openModal('pnlModal')">Full View &#x2192;</span>
+          </div>
+          <div class="pnl-row"><span class="pnl-lbl">Realized</span><span class="pnl-val pos">+$8,460</span></div>
+          <div class="pnl-row"><span class="pnl-lbl">Unrealized</span><span class="pnl-val" style="color:var(--o);">+$1,240</span></div>
+          <div class="pnl-row"><span class="pnl-lbl">All Time</span><span class="pnl-val pos">+$48,221</span></div>
+        </div>
+
+        <div class="ph">
+          <div class="ph-title">Open Positions</div>
+          <span class="ph-action" onclick="openModal('historyModal')">History</span>
+        </div>
+        <div class="pos-list">
+          <div class="pos-row">
+            <div class="pos-top"><div class="pos-sym"><div class="pr-dot" style="background:#F7931A;"></div>BONK</div><div class="pos-pnl pos">+$378</div></div>
+            <div class="pos-bot"><div class="pos-det">0.5 SOL &middot; Entry $0.0000218</div><div class="pos-det pos">+40.1%</div></div>
+          </div>
+          <div class="pos-row">
+            <div class="pos-top"><div class="pos-sym"><div class="pr-dot" style="background:#14F195;"></div>POPCAT</div><div class="pos-pnl pos">+$124</div></div>
+            <div class="pos-bot"><div class="pos-det">0.3 SOL &middot; Entry $0.3841</div><div class="pos-det pos">+25.5%</div></div>
+          </div>
+          <div class="pos-row">
+            <div class="pos-top"><div class="pos-sym"><div class="pr-dot" style="background:#FF7A2F;"></div>FWOG</div><div class="pos-pnl neg">-$32</div></div>
+            <div class="pos-bot"><div class="pos-det">0.2 SOL &middot; Entry $0.00280</div><div class="pos-det neg">-14.3%</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /layout -->
+
+    <!-- STATUS BAR -->
+    <div class="sb">
+      <div class="sb-item"><div class="sb-dot" style="background:var(--g);box-shadow:0 0 4px var(--g);"></div><span id="sbNet">SOL MAINNET</span></div>
+      <div class="sb-item"><div class="sb-dot" style="background:var(--g);"></div>RPC: 12ms</div>
+      <div class="sb-item"><div class="sb-dot" style="background:var(--o);"></div>Gas: 0.000025</div>
+      <div class="sb-item" style="margin-left:auto;" id="sbClock">RDO ONE &middot; INSIDER &nbsp;&middot;&nbsp; UTC 00:00:00<span class="blink">|</span></div>
+    </div>
+
+  </div><!-- /insider flex column -->
+</div><!-- /insiderScreen -->
+
+
+<!-- ROUTING + PARTICLES + CHART -->
+<script>
+(function() {
+  var SCREENS = ['landingScreen','welcomeScreen','terminalScreen','insiderScreen'];
+
+  function setGlobalBack(show) {
+    var b = document.getElementById('globalBack');
+    if (!b) return;
+    if (show) b.classList.remove('screen-hidden');
+    else b.classList.add('screen-hidden');
+  }
+
+  function showOnly(id) {
+    SCREENS.forEach(function(s) {
+      var el = document.getElementById(s);
+      if (!el) return;
+      if (s === id) el.classList.remove('screen-hidden');
+      else el.classList.add('screen-hidden');
+    });
+    setGlobalBack(id === 'terminalScreen' || id === 'insiderScreen');
+  }
+
+  function _wipe(label, cb) {
+    var w = document.getElementById('pageWipe');
+    var lbl = document.getElementById('wipeLabel');
+    if (lbl) lbl.textContent = label || 'RDO ONE';
+    w.className = 'wipe-in';
+    setTimeout(function() {
+      cb();
+      w.className = 'wipe-out';
+      setTimeout(function() { w.className = ''; }, 500);
+    }, 400);
+  }
+
+  window.goLanding = function() {
+    _wipe('RDO ONE', function() { showOnly('landingScreen'); stopParticles(); });
+  };
+  window.goWelcome = function() {
+    _wipe('RDO ONE', function() { showOnly('welcomeScreen'); startParticles(); });
+  };
+  window.goFundamentals = function() {
+    _wipe('FUNDAMENTALS', function() {
+      showOnly('terminalScreen');
+      stopParticles();
+      if (window.rdoInitFundamentals) window.rdoInitFundamentals();
+    });
+  };
+  window.goInsider = function() {
+    _wipe('INSIDER', function() { showOnly('insiderScreen'); stopParticles(); });
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    var term = document.getElementById('terminalScreen');
+    var ins  = document.getElementById('insiderScreen');
+    if (term && !term.classList.contains('screen-hidden')) goWelcome();
+    else if (ins && !ins.classList.contains('screen-hidden')) goWelcome();
+  });
+
+  /* ── PARTICLES ─────────────────────────────────────────── */
+  var _raf = null, _pts = [], _cv, _ctx;
+
+  function startParticles() {
+    _cv = document.getElementById('wParticles');
+    if (!_cv) return;
+    _cv.width = window.innerWidth; _cv.height = window.innerHeight;
+    _ctx = _cv.getContext('2d');
+    _pts = [];
+    for (var i = 0; i < 52; i++)
+      _pts.push({ x: Math.random()*_cv.width, y: Math.random()*_cv.height,
+                  vx:(Math.random()-0.5)*0.5, vy:(Math.random()-0.5)*0.5, r:Math.random()*2+1 });
+    if (_raf) cancelAnimationFrame(_raf);
+    animateParticles();
+    window.addEventListener('resize', resizeParticles);
+  }
+  function stopParticles() {
+    if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
+    window.removeEventListener('resize', resizeParticles);
+  }
+  function resizeParticles() { if(_cv){_cv.width=window.innerWidth;_cv.height=window.innerHeight;} }
+  function animateParticles() {
+    if (!_ctx||!_cv) return;
+    _ctx.clearRect(0,0,_cv.width,_cv.height);
+    for (var i=0;i<_pts.length;i++) {
+      var p=_pts[i];
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=_cv.width; if(p.x>_cv.width)p.x=0;
+      if(p.y<0)p.y=_cv.height; if(p.y>_cv.height)p.y=0;
+      _ctx.beginPath(); _ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      _ctx.fillStyle='rgba(255,92,0,0.55)'; _ctx.fill();
+      for (var j=i+1;j<_pts.length;j++) {
+        var q=_pts[j], dx=p.x-q.x, dy=p.y-q.y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<130){ _ctx.beginPath(); _ctx.moveTo(p.x,p.y); _ctx.lineTo(q.x,q.y);
+          _ctx.strokeStyle='rgba(255,92,0,'+(0.12*(1-d/130))+')';
+          _ctx.lineWidth=0.8; _ctx.stroke(); }
+      }
+    }
+    _raf = requestAnimationFrame(animateParticles);
+  }
+
+  /* ── LANDING REVEAL ─────────────────────────────────────── */
+  function initReveal() {
+    var els = document.querySelectorAll('.lnd-reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function(el){el.classList.add('visible');}); return; }
+    var ob = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('visible');ob.unobserve(e.target);} });
+    }, {threshold:0.12});
+    els.forEach(function(el){ob.observe(el);});
+  }
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    initReveal();
+    showOnly('landingScreen');
+  });
+})();
+</script>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
